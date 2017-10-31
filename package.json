@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "author": "",
+  "scripts": {
+    "opency": "./node_modules/.bin/cypress open",
+    "runcychrome": " ./node_modules/.bin/cypress run --record --key 182c4830-072f-4225-b48e-a32d5718ae88 --browser chrome",
+    "runcy": " ./node_modules/.bin/cypress run --record --key 182c4830-072f-4225-b48e-a32d5718ae88"
+  },
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "cypress": "^1.0.2"
   }
 }
