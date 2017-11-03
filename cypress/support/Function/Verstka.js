@@ -1,5 +1,5 @@
 "use strict";
-let header = (url)=>{
+let header = ()=>{
   cy.get('#headerApp').then((data)=>{
     expect(data).to.have.class("app-header");
     expect(data).to.be.visible;

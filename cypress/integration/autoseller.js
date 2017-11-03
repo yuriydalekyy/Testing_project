@@ -6,37 +6,81 @@ const for_seo = {
   googleTagManager: true
 };
 
-describe("Tests on https://auto.ria.com/autoseller/addpackage/", ()=>{
+describe("Tests on https://auto.ria.com/autoseller/addpackage/", () => {
   let routs = [
     {
-      method:'GET',
-      url:'https://sslpagestat.mmi.bemobile.ua/pagestat/**',
-      alias:'pagestat'
+      method: 'GET',
+      url: 'https://sslpagestat.mmi.bemobile.ua/pagestat/**',
+      alias: 'pagestat'
     },
     {
-      method:'GET',
-      url:'https://auto.ria.com/users/**',
-      alias:'users'
+      method: 'GET',
+      url: 'https://auto.ria.com/users/**',
+      alias: 'users'
     }
   ];
-  let count = ()=>{
-    var cou =0;
-    return ()=>{
+  let count = () => {
+    var cou = 0;
+    return () => {
       return {
-        inc:()=>{
+        inc: () => {
           return ++cou
         },
-        val:()=>{
+        val: () => {
           return cou
         }
       };
     }
   };
-  it("Test on verstka", ()=>{
+  it("Test on verstka", () => {
     cy.server();
     cy.route('**/manager/**').as('manager');
-    cy.visit('https://auto.ria.com/autoseller/addpackage/').wait('@manager').wait(100);
+    cy.visit('https://auto.ria.com/autoseller/addpackage/').wait('@manager').wait(50);
+
+    /*Перевірка верстки хедера*/
     header();
+
+    /*Перевірка головної фоточки*/
+    cy.get('div.auto-seller-banner').find('img').then((img) => {
+      cy.request({'url': img[0].src}).then((data) => {
+        expect(data.status).to.be.eq(200);
+      })
+    });
+
+    /*Перевірка H1*/
+    cy.get('h1').then((h1) => {
+      expect(h1).to.include.text(`\n         Публикуйте экономно и получайте больше возможностей с «Автопродажей»\n    `)
+    });
+
+    /*Блок переваг*/
+    cy.get('div.auto-seller-benefits')
+        .then((data) => {
+          expect(data).to.be.visible;
+        })
+        .find('h2')
+        .then((h2) => {
+          expect(h2).to.have.text(`Преимущества «Автопродажи»`)
+        });
+    cy.get('div.auto-seller-benefits')
+        .find('div.boxed')
+        .then((box) => {
+          expect(box).to.be.visible;
+        })
+        .find('>div')
+        .then((div) => {
+          expect(div).to.have.lengthOf(5);
+          expect(div[1]).to.be.visible;
+        })
+        .find('img')
+        .then((img) => {
+          for (let i = 0; i < img.length; i++) {
+            cy.request({url: img[i].src})
+                .then((foto) => {
+                  expect(foto.status).to.be.eq(200)
+                })
+          }
+        })
+
   });
 
   it("SEO test", function (done) {
@@ -68,19 +112,19 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", ()=>{
           }
 
         })
-        .then(()=>{
+        .then(() => {
           done();
         });
 
   });
-  it("First", (done)=>{
+  it("First", (done) => {
     cy.server({
-      onResponse:(data)=>{
-        routs.forEach((item)=>{
-          if(data.url.indexOf(item.url.slice(0,item.url.length-2))!==-1){
-            console.log("Item url -> "+item.url.slice(0,item.url.length-2));
+      onResponse: (data) => {
+        routs.forEach((item) => {
+          if (data.url.indexOf(item.url.slice(0, item.url.length - 2)) !== -1) {
+            console.log("Item url -> " + item.url.slice(0, item.url.length - 2));
             window[item.alias].inc();
-            console.log("Requests: "+window[item.alias].val())
+            console.log("Requests: " + window[item.alias].val())
           }
         });
 
@@ -88,8 +132,8 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", ()=>{
     });
 
 
-    routs.forEach((item)=>{
-      cy.route(item.method,item.url).as(item.alias);
+    routs.forEach((item) => {
+      cy.route(item.method, item.url).as(item.alias);
       window[item.alias] = count()();
     });
     cy.visit("https://auto.ria.com/autoseller/addpackage/");
@@ -98,10 +142,6 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", ()=>{
     cy.wait(1000);
     done();
   });
-
-
-
-
 
 
 });
