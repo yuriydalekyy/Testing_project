@@ -91,8 +91,6 @@ let header = ()=>{
     expect(data).to.have.prop('href').match(/https:\/\/auto.ria.com\/stat\//);
     expect(data).to.have.text("1400 авто за день продається на AUTO.RIA");
   });
-
-
 }
 
 module.exports={header}

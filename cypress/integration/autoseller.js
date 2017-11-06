@@ -35,17 +35,18 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", () => {
   it("Test on verstka", () => {
     cy.server();
     cy.route('**/manager/**').as('manager');
-    cy.visit('https://auto.ria.com/autoseller/addpackage/').wait('@manager').wait(50);
+    cy.visit('https://auto.ria.com/autoseller/addpackage/').wait('@manager');
 
     /*Перевірка верстки хедера*/
     header();
 
     /*Перевірка головної фоточки*/
-    cy.get('div.auto-seller-banner').find('img').then((img) => {
-      cy.request({'url': img[0].src}).then((data) => {
-        expect(data.status).to.be.eq(200);
-      })
-    });
+    cy.get('div.auto-seller-banner').find('img')
+        .then((img) => {
+          cy.request({'url': img[0].src}).then((data) => {
+            expect(data.status).to.be.eq(200);
+          })
+        });
 
     /*Перевірка H1*/
     cy.get('h1').then((h1) => {
@@ -53,34 +54,100 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", () => {
     });
 
     /*Блок переваг*/
-    cy.get('div.auto-seller-benefits')
+    cy.get('div.auto-seller-benefits').as('advantages')
         .then((data) => {
           expect(data).to.be.visible;
-        })
-        .find('h2')
-        .then((h2) => {
-          expect(h2).to.have.text(`Преимущества «Автопродажи»`)
-        });
-    cy.get('div.auto-seller-benefits')
-        .find('div.boxed')
-        .then((box) => {
-          expect(box).to.be.visible;
-        })
-        .find('>div')
-        .then((div) => {
-          expect(div).to.have.lengthOf(5);
-          expect(div[1]).to.be.visible;
-        })
-        .find('img')
-        .then((img) => {
-          for (let i = 0; i < img.length; i++) {
-            cy.request({url: img[i].src})
-                .then((foto) => {
-                  expect(foto.status).to.be.eq(200)
-                })
-          }
-        })
+          cy.get('@advantages')
+              .find('h2')
+              .then((h2) => {
+                expect(h2).to.have.text(`Преимущества «Автопродажи»`)
+              });
+          cy.get('@advantages')
+              .find('div.boxed')
+              .then((box) => {
+                expect(box).to.be.visible;
+              })
+              .find('>div').as('advantagesDivs')
+              .then((div) => {
+                expect(div).to.have.lengthOf(5);
+                expect(div[1]).to.be.visible;
+                cy.get('@advantagesDivs')
+                    .find('img')
+                    .each((img) => {
+                      cy.request({url: img[0].src})
+                          .then((foto) => {
+                            expect(foto.status).to.be.eq(200)
+                          })
+                    });
+                cy.get('@advantagesDivs')
+                    .find('.description')
+                    .each((desc) => {
+                      expect(desc).to.have.class('mhide');
+                    })
 
+
+              })
+
+        });
+
+
+    cy.get('div.auto-sell-pref').as('sellPref')
+        .then((data) => {
+          expect(data).to.be.visible;
+          cy.get('@sellPref').find('h2')
+              .then((h2) => {
+                expect(h2).to.have.text(`Настройте свою «Автопродажу»`);
+                expect(h2).to.have.class('bold');
+              });
+
+          cy.get('@sellPref').find('div.blue-box').as('sellPrefBlue-box')
+              .then((div) => {
+                expect(div).to.be.visible;
+
+                cy.get('@sellPrefBlue-box').find('>span')
+                    .then((span) => {
+                      expect(span).to.be.visible;
+                      expect(span).to.have.class('box-title');
+                      expect(span).to.have.text(`Создайте свой оптимальный пакет «Автопродажи» на AUTO.RIA`);
+                    });
+
+                cy.get('@sellPrefBlue-box').find('>div:first').as('bbdiv1')
+                    .then((bbdiv) => {
+                      expect(bbdiv).to.be.visible;
+                      cy.get('@bbdiv1').find('>label')
+                          .then((lable) => {
+                            expect(lable).to.be.visible;
+                            expect(lable).to.have.text(`Количество публикаций `);
+                          })
+                      cy.get('@bbdiv1').find('>div').as('bbdiv1opt')
+                          .then((div) => {
+                            expect(div).to.be.visible;
+                            expect(div).to.have.class('middle');
+                          })
+                          .click()
+                          .find('.options').as('bbdiv1optDiv')
+                          .then((opt) => {
+                            expect(opt).to.be.visible;
+                            cy.get('@bbdiv1optDiv').find('>div')
+                                .then((div) => {
+                                  expect(div).to.have.lengthOf(9)
+                                })
+                                .each((div) => {
+                                  expect(div[0]).to.have.class('custom-select')
+                                  expect(div[0]).to.have.class('item')
+                                })
+                          })
+                          .get('@bbdiv1opt')
+                          .click()
+                          .get('@bbdiv1optDiv')
+                          .then((opt) => {
+                            expect(opt).to.be.not.visible;
+                          })
+
+                    })
+
+              })
+        })
   });
 
   it("SEO test", function (done) {
