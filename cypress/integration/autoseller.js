@@ -90,7 +90,7 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", () => {
 
         });
 
-
+/**/
     cy.get('div.auto-sell-pref').as('sellPref')
         .then((data) => {
           expect(data).to.be.visible;
