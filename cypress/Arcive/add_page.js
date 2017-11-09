@@ -1,0 +1,40 @@
+describe("test",()=>{
+  it("1",(done)=>{
+    cy.server();
+    cy.setCookie("PSP_ID","d9c347b7ecc79a4cabfeef901c4f52d59af37608ea4c49f420c819c4219f43614778298");
+    cy.route("ph/ajax/modelsByMark/**").as('mark');
+    for(let i=0; i<5; i++){
+      cy.visit("https://auto.ria.com/add_auto.html").wait(10);
+      cy.get("#markaid__addcars").select("Acura").wait('@mark');
+      cy.get("#modelid__addcars").select("MDX");
+      cy.get("#year__addcars").select("2015");
+      cy.get("#race_addcars").type("23");
+      cy.get("#price__addcars").type("0");
+      cy.get("#submitform__addcars").click();
+      cy.get("#fuelid__addcars").select("1")
+          .get("#choosefuelrates__addcars").click()
+          .get("#fuelratescity__addcars").type("1")
+          .get("#fuelratesrace__addcars").type("1")
+          .get("#fuelratescombine__addcars").type("1");
+      cy.get("#element_tree_354").check()
+          .get("#element_tree_217").check()
+          .get("#element_tree_459").check()
+          .get("#element_tree_515").check()
+          .get("#element_tree_463").check()
+          .get("#element_tree_481").check()
+          .get("#element_tree_225").check()
+          .get("#element_tree_442").check()
+          .get("#element_tree_211").check()
+          .get("#element_tree_485").check()
+          .get("#element_tree_303").check()
+          .get("#element_tree_137").check()
+          .get("#element_tree_188").check()
+          .get("#element_tree_437").check()
+          .get("#element_tree_525").check()
+          .get("#element_tree_190").check()
+          .get("#element_tree_125").check()
+      cy.get("#submitform__addcars").click();
+    }
+
+  })
+})
