@@ -90,7 +90,7 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", () => {
 
         });
 
-/**/
+    /**/
     cy.get('div.auto-sell-pref').as('sellPref')
         .then((data) => {
           expect(data).to.be.visible;
@@ -144,8 +144,70 @@ describe("Tests on https://auto.ria.com/autoseller/addpackage/", () => {
                             expect(opt).to.be.not.visible;
                           })
 
-                    })
+                    });
 
+                cy.get('@sellPrefBlue-box').find('>div:nth-child(3)').as('bbdiv2')
+                    .then((bbdiv) => {
+                      expect(bbdiv).to.be.visible;
+                      cy.get('@bbdiv2').find('label')
+                          .then((label) => {
+                            expect(label).to.be.visible;
+                            expect(label).to.have.text('Период размещения');
+                          });
+                      cy.get('@bbdiv2').find('>div').as('bbdiv2opt')
+                          .then((div) => {
+                            expect(div).to.have.class('middle');
+                            expect(div).to.be.visible;
+                            cy.get('@bbdiv2opt').find('>div').as('bbdiv2optDiv')
+                                .then((optDiv) => {
+                                  expect(optDiv).to.have.class('four');
+                                  cy.get('@bbdiv2optDiv').find('>div:nth-child(1)')
+                                      .then((selectOpt) => {
+                                        expect(selectOpt).to.have.class('active green');
+                                        expect(selectOpt["0"].attributes[1].value).to.be.eq('1')
+                                        cy.get('#fullPriceWrap')
+                                            .then((bonus) => {
+                                              expect(bonus).to.be.not.visible;
+                                            })
+                                      });
+
+                                  cy.get('@bbdiv2optDiv').find('>div:nth-child(3)')
+                                      .click()
+                                      .then((selectOpt) => {
+                                        expect(selectOpt).to.have.class('active green');
+                                        expect(selectOpt["0"].attributes[1].value).to.be.eq('6');
+                                        cy.get('#fullPriceWrap')
+                                            .then((bonus) => {
+                                              expect(bonus).to.be.visible;
+                                            })
+                                      });
+
+                                  cy.get('@bbdiv2optDiv').find('>div:nth-child(1)').click();
+
+                                })
+                          })
+                    });
+
+                cy.get('@sellPrefBlue-box').find('>div:nth-child(5)').as('bbdiv3')
+                    .then((bbdiv) => {
+                      expect(bbdiv).to.be.visible;
+                      cy.get('@bbdiv3').find('label')
+                          .then((label) => {
+                            expect(label).to.be.visible;
+                            expect(label).to.have.text('Сумма к оплате');
+                          })
+                      cy.get('@bbdiv3').find('#priceWithBonus')
+                          .then((price)=>{
+                        expect(price).to.be.visible;
+                        expect(price).to.have.text("225");
+                        expect(price).to.have.class('val total-price');
+                          })
+                    });
+
+                cy.get('@sellPrefBlue-box').find('>div.s-order a')
+                    .then((button)=>{
+                  expect()
+                    })
               })
         })
   });
